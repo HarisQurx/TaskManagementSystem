@@ -6,22 +6,24 @@ namespace TaskManagerApp
 {
     class Program
     {
-        // In-memory list to store users
         private static List<User> users = new List<User>();
+        private static List<TaskManagerApp.Models.Task> tasks = new List<TaskManagerApp.Models.Task>();
 
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to the Task Management System!");
             Console.WriteLine("=====================================");
 
-            // Main menu
             bool running = true;
             while (running)
             {
                 Console.WriteLine("\nMain Menu:");
                 Console.WriteLine("1. Add User");
                 Console.WriteLine("2. List Users");
-                Console.WriteLine("3. Exit");
+                Console.WriteLine("3. Add Task");
+                Console.WriteLine("4. List Tasks");
+                Console.WriteLine("5. Assign Task");
+                Console.WriteLine("6. Exit");
                 Console.Write("Choose an option: ");
 
                 string choice = Console.ReadLine();
@@ -35,6 +37,15 @@ namespace TaskManagerApp
                         ListUsers();
                         break;
                     case "3":
+                        AddTask();
+                        break;
+                    case "4":
+                        ListTasks();
+                        break;
+                    case "5":
+                        AssignTask();
+                        break;
+                    case "6":
                         running = false;
                         break;
                     default:
@@ -46,11 +57,9 @@ namespace TaskManagerApp
             Console.WriteLine("Thank you for using the Task Management System. Goodbye!");
         }
 
-        // Add a new user
         private static void AddUser()
         {
             Console.WriteLine("\nEnter user details:");
-
             Console.Write("ID: ");
             int id = int.Parse(Console.ReadLine());
 
@@ -69,7 +78,6 @@ namespace TaskManagerApp
             Console.WriteLine("User added successfully!");
         }
 
-        // List all users
         private static void ListUsers()
         {
             Console.WriteLine("\nRegistered Users:");
@@ -84,6 +92,70 @@ namespace TaskManagerApp
             {
                 Console.WriteLine(user.ToString());
             }
+        }
+
+        private static void AddTask()
+        {
+            Console.WriteLine("\nEnter task details:");
+
+            Console.Write("ID: ");
+            int id = int.Parse(Console.ReadLine());
+
+            Console.Write("Title: ");
+            string title = Console.ReadLine();
+
+            Console.Write("Description: ");
+            string description = Console.ReadLine();
+
+            Console.Write("Status (Pending/Completed): ");
+            string status = Console.ReadLine();
+
+            TaskManagerApp.Models.Task task = new TaskManagerApp.Models.Task(id, title, description, status);
+            tasks.Add(task);
+
+            Console.WriteLine("Task added successfully!");
+        }
+
+        private static void ListTasks()
+        {
+            Console.WriteLine("\nTasks:");
+
+            if (tasks.Count == 0)
+            {
+                Console.WriteLine("No tasks found.");
+                return;
+            }
+
+            foreach (var task in tasks)
+            {
+                Console.WriteLine(task.ToString());
+            }
+        }
+
+        private static void AssignTask()
+        {
+            Console.Write("\nEnter Task ID to assign: ");
+            int taskId = int.Parse(Console.ReadLine());
+
+            TaskManagerApp.Models.Task task = tasks.Find(t => t.Id == taskId);
+            if (task == null)
+            {
+                Console.WriteLine("Task not found.");
+                return;
+            }
+
+            Console.Write("Enter User ID to assign the task to: ");
+            int userId = int.Parse(Console.ReadLine());
+
+            User user = users.Find(u => u.Id == userId);
+            if (user == null)
+            {
+                Console.WriteLine("User not found.");
+                return;
+            }
+
+            task.AssignedUser = user;
+            Console.WriteLine($"Task '{task.Title}' has been assigned to {user.Name}.");
         }
     }
 }
